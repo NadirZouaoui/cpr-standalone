@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://lbnqvkekux01"]
+
+[ext_resource type="Script" uid="uid://vlll70u026cj" path="res://scripts/cpr/cpr_headless_test.gd" id="1_test"]
+
+[node name="CprHeadlessTest" type="Node" unique_id=1044681306]
+script = ExtResource("1_test")

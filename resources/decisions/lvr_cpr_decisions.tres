@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="DecisionList" format=3]
+
+[ext_resource type="Script" path="res://scripts/core/decision_list.gd" id="1_list"]
+[ext_resource type="Script" path="res://scripts/core/decision_point.gd" id="2_decision"]
+[ext_resource type="Resource" path="res://resources/decisions/help_before_cpr.tres" id="3_help"]
+
+[resource]
+script = ExtResource("1_list")
+decisions = Array[ExtResource("2_decision")]([ExtResource("3_help")])

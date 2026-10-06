@@ -1,0 +1,104 @@
+[gd_resource type="Resource" script_class="HazardList" format=3]
+
+[ext_resource type="Script" path="res://scripts/core/hazard_item.gd" id="1_item"]
+[ext_resource type="Script" path="res://scripts/core/hazard_list.gd" id="2_list"]
+
+; PASS 1 - read from the floor, board shut. Completes `hazard_identified`.
+;
+; EVERY LINE IN THIS FILE IS A DRAFT. The client supplied no hazard content;
+; it was authored during the overnight run of 3 Sep 2026 and checked against
+; the room's mesh inventory, not against anything they said. Four of the
+; plan's original twelve entries did not survive that check - the two in this
+; pass that were reworded are noted in place below, and the whole account is
+; in docs/OVERNIGHT_PROGRESS.md under Task 4.
+;
+; A fifth is now gone as well: `lighting_lost_on_isolation` was deleted on
+; Nadir's instruction of 4 Sep 2026. It described the room going dark on
+; isolation, which the simulation does not do and will not - so a trainee was
+; marked down for failing to perceive something that is not there. Pass 1 is
+; eight entries: four real, four distractors.
+;
+; `hazardous_atmosphere` was added on Nadir's instruction. Unlike the ladder
+; and the pipework it needs no measurement: it is false by absence - there is
+; no fuel, solvent, cylinder or charging battery bank modelled in the room, and
+; nothing that could put one there - so there is no version of the geometry in
+; which a trainee is marked wrong for being right.
+;
+; Entries carrying `needs_review = true` are the ones still holding an open
+; question. HazardList.review_notes() prints them.
+
+[sub_resource type="Resource" id="p1_01"]
+script = ExtResource("1_item")
+id = &"energised_board"
+label = "Switchboard is energised and has not been isolated"
+is_real = true
+rationale = "The board is live and the handle is still in the ON position. Everything inside it and every conductor it feeds is at 400 V until the isolating device is thrown and proved dead."
+
+[sub_resource type="Resource" id="p1_02"]
+script = ExtResource("1_item")
+id = &"no_isolation_point"
+label = "No point of isolation identified or marked"
+is_real = true
+rationale = "Nothing on the board says which device kills this circuit. Anyone arriving mid-job - including whoever has to rescue you - has no way to make it safe in a hurry."
+
+[sub_resource type="Resource" id="p1_03"]
+script = ExtResource("1_item")
+id = &"live_work_planned"
+label = "Live low voltage work is about to be carried out on this board"
+is_real = true
+rationale = "Live working is the hazard the whole exercise exists around. It is why there is a safety observer, an insulated crook and a rescue kit within reach in the first place."
+review_note = "REWORDED from the plan's 'Worker is about to open a panel on a live board', which was factually wrong: breaker_panel.gd holds CasualtyRig out of the room until after the sign is hung, so no worker is visible during pass 1. The new wording is knowable from the opening brief (kit_check.gd scenario_brief) rather than from the geometry."
+
+[sub_resource type="Resource" id="p1_04"]
+script = ExtResource("1_item")
+id = &"metal_hand_tools"
+label = "Metal hand tools are being used on this job"
+is_real = true
+rationale = "Uninsulated steel is a conductor with a handle on it. A spanner dropped across two busbars is a short circuit at the fault level of the whole board, and the arc does not care who is holding it."
+needs_review = true
+review_note = "REWORDED from 'Metal hand tools in use next to a live board'. The tools are real - Wrench, Pliers1, Hammer, SD1, SD2, Electric_hammerdrill1 - but they are laid out on the bench for the kit check, not at the board, and nobody is holding one during pass 1. STILL UNMEASURED: their distance from the board was never confirmed; the verification read presence only."
+
+[sub_resource type="Resource" id="p1_06"]
+script = ExtResource("1_item")
+id = &"ladder_in_walkway"
+label = "Ladder stored across the walkway"
+is_real = false
+rationale = "The folding ladder is stowed clear of the route to the board. Housekeeping matters, but calling a stowed ladder a hazard on a live working job spends attention that belongs on the electrical risk."
+needs_review = true
+review_note = "PRESENT BUT UNMEASURED. FoldingLadder is modelled; whether it actually obstructs the walkway was never measured - global transforms are unavailable with the .blend instantiated outside the tree. If it IS across the route this stops being a distractor and the trainee is marked wrong for being right. Measure in the editor before this ships."
+
+[sub_resource type="Resource" id="p1_07"]
+script = ExtResource("1_item")
+id = &"overhead_pipework"
+label = "Overhead pipework at head height"
+is_real = false
+rationale = "The pipe runs sit above working height. A head-strike hazard is worth noting on a survey, but it is not what is going to kill somebody at this board today."
+needs_review = true
+review_note = "PRESENT BUT UNMEASURED. BagaPie_Pipes_001 (bbox 9.55 x 0.33 x 2.74) and BagaPie_Pipes_002 (9.29 x 1.55 x 2.54) are modelled; their height above the floor was never measured. Same risk as the ladder - if they really are at head height this is not a distractor."
+
+[sub_resource type="Resource" id="p1_09"]
+script = ExtResource("1_item")
+id = &"hazardous_atmosphere"
+label = "Hazardous atmosphere in the switchroom"
+is_real = false
+rationale = "The switchroom is ventilated and there is nothing in it that gives off gas or vapour - no fuel, no solvents, no cylinders, no battery bank on charge. Atmosphere is worth a thought before any enclosed space, and it is the right question in a plant room or a pit. Asked here it is a habit rather than an observation, and the habit costs the attention the live board needs."
+
+[sub_resource type="Resource" id="p1_08"]
+script = ExtResource("1_item")
+id = &"wet_floor"
+label = "Wet floor around the switchboard"
+is_real = false
+rationale = "The floor is dry. Water near a live board would be a serious hazard, which is exactly why it is worth checking for rather than assuming - but reporting one that is not there is a false alarm, and false alarms are how real ones stop being believed."
+
+[resource]
+script = ExtResource("2_list")
+heading = "Which hazards can you identify from here?"
+step_id = &"hazard_identified"
+requires_step = &""
+locked_message = ""
+items = Array[ExtResource("1_item")]([SubResource("p1_01"), SubResource("p1_02"), SubResource("p1_03"), SubResource("p1_04"), SubResource("p1_06"), SubResource("p1_07"), SubResource("p1_09"), SubResource("p1_08")])
+submit_label = "Submit assessment"
+review_heading = "You have reported these hazards"
+review_empty_line = "You have not reported any hazards."
+review_correct_label = "Go back and change"
+review_confirm_label = "Submit answer"

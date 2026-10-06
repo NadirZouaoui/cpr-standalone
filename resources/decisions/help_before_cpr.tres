@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="DecisionPoint" format=3]
+
+[ext_resource type="Script" path="res://scripts/core/decision_option.gd" id="1_option"]
+[ext_resource type="Script" path="res://scripts/core/decision_point.gd" id="2_decision"]
+
+[sub_resource type="Resource" id="opt_help"]
+script = ExtResource("1_option")
+id = &"call_help"
+label = "Call for help and send for an AED"
+detail = "One rescuer cannot run the resuscitation alone."
+intent = &"prioritise_help"
+correct = true
+violation_reason = ""
+feedback = "Correct. Get help and a defibrillator moving before you commit both hands to the chest."
+
+[sub_resource type="Resource" id="opt_compressions"]
+script = ExtResource("1_option")
+id = &"start_compressions"
+label = "Start chest compressions immediately"
+detail = "The casualty is unresponsive and every second without circulation counts."
+intent = &"prioritise_compressions"
+correct = false
+violation_reason = "Compressions started before help was called."
+feedback = "Compressions matter, but alone you cannot call, fetch the AED and compress. The call goes out first."
+
+[resource]
+script = ExtResource("2_decision")
+id = &"help_before_cpr"
+title = "The casualty is unresponsive. What do you do first?"
+body = "You are the only rescuer at the casualty. The two-way radio is on the bench behind you."
+category = &"resuscitation"
+step_id = &"send_for_help"
+trigger_kind = 1
+trigger_value = &""
+trigger_state = 1
+requires = Array[StringName]([])
+unless = Array[StringName]([&"send_for_help"])
+options = Array[ExtResource("1_option")]([SubResource("opt_help"), SubResource("opt_compressions")])
+time_limit = 0.0
+weight = 8

@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://bkkd8ydge0wyt"]
+
+[ext_resource type="PackedScene" path="res://scenes/cpr/CprRig.tscn" id="1_cprrig"]
+[ext_resource type="PackedScene" path="res://scenes/cpr/CprPanel.tscn" id="2_cprpanel"]
+[ext_resource type="Script" uid="uid://ctt1kmohdwcmt" path="res://scripts/cpr/cpr_panel_stub_emitter.gd" id="3_stub"]
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.12, 0.13, 0.16, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.6
+
+[node name="CprPanelTestHarness" type="Node3D" unique_id=92344289]
+
+[node name="StubEmitter" type="Node" parent="." unique_id=1923905132]
+script = ExtResource("3_stub")
+
+[node name="CprRig" parent="." unique_id=689065188 instance=ExtResource("1_cprrig")]
+chest_bone_names = PackedStringArray("mixamorig:Spine2", "mixamorig:Spine1", "mixamorig:Spine", "Spine2", "Spine")
+head_bone_names = PackedStringArray("mixamorig:Head", "mixamorig:Neck", "Head", "Neck")
+hips_bone_names = PackedStringArray("mixamorig:Hips", "Hips", "mixamorig:Spine")
+
+[node name="CprPanel" parent="." unique_id=2114431581 instance=ExtResource("2_cprpanel")]
+panel_world_size = 1.0
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1625918126]
+transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 1.6, 2.4)
+current = true
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=842927769]
+transform = Transform3D(0.866, -0.25, 0.433, 0, 0.866, 0.5, -0.5, -0.433, 0.75, 0, 2, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=509632880]
+environment = SubResource("Environment_1")

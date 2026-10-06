@@ -1,0 +1,57 @@
+[gd_resource type="Resource" script_class="HazardList" format=3]
+
+[ext_resource type="Script" path="res://scripts/core/hazard_item.gd" id="1_item"]
+[ext_resource type="Script" path="res://scripts/core/hazard_list.gd" id="2_list"]
+
+; PASS 2 - the reassessment, board open. Completes `hazards_reassessed`.
+;
+; This pass exists because the busbars are inside the board and cannot
+; honestly be identified before it is open. It is gated on `panel_opened` and
+; is unanswerable before it - reassessing after exposing something is what the
+; trade teaches, so the gate is the feature rather than a workaround.
+;
+; EVERY LINE IN THIS FILE IS A DRAFT. See hazards_pass1.tres and
+; docs/OVERNIGHT_PROGRESS.md, Task 4.
+
+[sub_resource type="Resource" id="p2_01"]
+script = ExtResource("1_item")
+id = &"exposed_busbars"
+label = "Exposed live busbars within arm's reach"
+is_real = true
+rationale = "Opening the door put bare 400 V conductors inside the working envelope of anyone standing at the board. This is the hazard the reassessment exists to catch: it did not exist a minute ago."
+
+[sub_resource type="Resource" id="p2_02"]
+script = ExtResource("1_item")
+id = &"no_barrier_or_mat"
+label = "No barrier or insulating mat in front of the open board"
+is_real = true
+rationale = "Nothing stops a slip, a stumble or a passer-by from ending up against the busbars, and nothing insulates the person working from the floor. The absence is the hazard."
+
+[sub_resource type="Resource" id="p2_03"]
+script = ExtResource("1_item")
+id = &"board_unlabelled"
+label = "The board is not labelled at all"
+is_real = true
+rationale = "Nothing inside identifies which way the supply comes in or what each way feeds. Isolating the wrong device is how people prove a live circuit dead, and an unlabelled board is how that mistake gets made."
+needs_review = true
+review_note = "REWORDED AND RECLASSIFIED, distractor -> real. The plan drafted this as 'Board is incorrectly labelled' and marked it a distractor. There is no label mesh either way, so 'incorrectly' was unanswerable - a guess rather than an assessment. The ABSENCE of labelling is verifiable from the room and is the same logic as the barrier entry above, which is already sound. Dropping the entry was the alternative; it was rejected because it would leave this pass with three lines, one of them a distractor."
+
+[sub_resource type="Resource" id="p2_04"]
+script = ExtResource("1_item")
+id = &"rodent_damage"
+label = "Rodent damage to the internal wiring"
+is_real = false
+rationale = "The internal wiring is intact. Chewed insulation inside a board is a real thing to look for on a survey, but reporting damage that is not there is as unhelpful as missing damage that is."
+
+[resource]
+script = ExtResource("2_list")
+heading = "The board is open. What has that exposed?"
+step_id = &"hazards_reassessed"
+requires_step = &"panel_opened"
+locked_message = "You cannot reassess what is inside the board until it is open."
+items = Array[ExtResource("1_item")]([SubResource("p2_01"), SubResource("p2_02"), SubResource("p2_03"), SubResource("p2_04")])
+submit_label = "Submit reassessment"
+review_heading = "You have reported these hazards"
+review_empty_line = "You have not reported any hazards."
+review_correct_label = "Go back and change"
+review_confirm_label = "Submit answer"

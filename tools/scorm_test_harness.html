@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>LVR CPR - SCORM 1.2 test harness</title>
+<!--
+  A mock LMS, so the half of the SCORM bridge that lives in JavaScript can be
+  tested without an LMS.
+
+  tools/check_lms.tscn covers the GDScript half: which elements are written and
+  what goes into them. It cannot cover the other half - that pipwerks finds an
+  API, that the version pin works, and that LMSSetValue actually lands - because
+  outside a browser every Lms call is a no-op by design. That is exactly the gap
+  the package shipped through once: the course ran perfectly and reported
+  nothing at all, and nothing in the project could tell.
+
+  This page puts a real SCORM 1.2 API object in the parent window, loads the
+  exported course in an iframe below it, and logs every call the course makes.
+
+  HOW TO RUN, from the project root (the folder holding build/ and tools/):
+
+      python -m http.server 8777
+
+  then open
+      http://localhost:8777/tools/scorm_test_harness.html
+
+  It must be http, not file://: the export fetches .wasm and .pck.
+
+  The mock is deliberately STRICT. An LMS that accepts anything proves nothing,
+  so writes to unknown or read-only elements are rejected with the error the
+  spec asks for, lesson_status and exit are checked against their vocabularies,
+  and the 4096-character cap on comments and suspend_data is enforced. A red
+  line here is a bug in the course, not in the harness.
+-->
+<style>
+  :root {
+    --bg: #14161a; --panel: #1c1f26; --line: #2c313b; --ink: #e6e8ec;
+    --dim: #8b93a1; --ok: #56d364; --bad: #f85149; --warn: #d29922; --key: #79c0ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 13px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+    display: grid; grid-template-columns: 1fr 460px; height: 100vh;
+  }
+  #course { border: 0; width: 100%; height: 100%; background: #000; }
+  aside { border-left: 1px solid var(--line); display: flex; flex-direction: column; overflow: hidden; }
+  h1 { font-size: 13px; margin: 0; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  h1 small { color: var(--dim); font-weight: normal; }
+  .sect { padding: 8px 12px; border-bottom: 1px solid var(--line); }
+  .sect > b { color: var(--dim); font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: .06em; }
+  #verdict { font-size: 14px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  #log { flex: 1; overflow: auto; padding: 4px 0; }
+  .row { padding: 2px 12px; white-space: pre-wrap; word-break: break-all; border-left: 3px solid transparent; }
+  .row.set { border-left-color: var(--key); }
+  .row.err { border-left-color: var(--bad); color: #ffb3ae; background: #2b1416; }
+  .row.life { border-left-color: var(--ok); color: var(--ok); }
+  .k { color: var(--key); }
+  .ok { color: var(--ok); } .bad { color: var(--bad); } .dim { color: var(--dim); } .warn { color: var(--warn); }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 1px 0; vertical-align: top; }
+  td:first-child { color: var(--key); white-space: nowrap; padding-right: 8px; }
+  td:last-child { word-break: break-all; }
+  button { font: inherit; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; padding: 3px 8px; cursor: pointer; }
+  button:hover { border-color: var(--key); }
+</style>
+</head>
+<body>
+
+<!--
+  allow: the exercise is mouse-look, so it calls requestPointerLock, and an
+  iframe is refused pointer lock unless its embedder grants it. Worth knowing
+  before an LMS launch goes wrong the same way: a course framed without these
+  loads and renders perfectly and then will not let the trainee turn around.
+  Launching the SCO in a new window sidesteps it entirely.
+-->
+<iframe id="course" src="../build/scorm_build/index.html" title="LVR CPR course"
+        allow="fullscreen; pointer-lock; autoplay"
+        allowfullscreen></iframe>
+
+<aside>
+  <h1>SCORM 1.2 mock LMS <small>— strict</small></h1>
+  <div id="verdict" class="dim">Waiting for LMSInitialize…</div>
+  <div class="sect"><b>Encoding probe</b><div id="probe" class="dim">running…</div></div>
+  <div class="sect"><b>Data model</b><table id="cmi"></table></div>
+  <div class="sect">
+    <b>Traffic</b>
+    <button onclick="document.getElementById('log').innerHTML=''">clear</button>
+    <button onclick="console.log(JSON.stringify(window.LMS_LOG,null,2))">dump to console</button>
+  </div>
+  <div id="log"></div>
+</aside>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------------------------------------------------------------- state --
+
+  // Defaults an LMS presents at launch. lesson_status starts "not attempted",
+  // which is what makes the wrapper's handleCompletionStatus set "incomplete"
+  // on init - the first traffic this page should ever see.
+  var cmi = {
+    "cmi.core.student_id": "test-learner-001",
+    "cmi.core.student_name": "Tester, Ada",
+    "cmi.core.lesson_location": "",
+    "cmi.core.credit": "credit",
+    "cmi.core.lesson_status": "not attempted",
+    "cmi.core.entry": "ab-initio",
+    "cmi.core.total_time": "0000:00:00.00",
+    "cmi.core.lesson_mode": "normal",
+    "cmi.core.exit": "",
+    "cmi.core.session_time": "0000:00:00.00",
+    "cmi.core.score.raw": "",
+    "cmi.core.score.min": "",
+    "cmi.core.score.max": "",
+    "cmi.suspend_data": "",
+    "cmi.comments": "",
+    "cmi.launch_data": "",
+    "cmi.student_data.mastery_score": ""
+  };
+
+  var READ_ONLY = ["cmi.core.student_id", "cmi.core.student_name", "cmi.core.credit",
+                   "cmi.core.entry", "cmi.core.total_time", "cmi.core.lesson_mode",
+                   "cmi.launch_data", "cmi.student_data.mastery_score"];
+  var WRITE_ONLY = ["cmi.core.exit", "cmi.core.session_time"];
+  var STATUS = ["passed", "completed", "failed", "incomplete", "browsed", "not attempted"];
+  var EXIT = ["time-out", "suspend", "logout", ""];
+  var CAP = 4096;
+
+  var ERRORS = {
+    0: "No error", 101: "General exception", 201: "Invalid argument error",
+    301: "Not initialized", 401: "Not implemented error",
+    403: "Element is read only", 404: "Element is write only",
+    405: "Incorrect data type"
+  };
+
+  var lastError = 0, initialized = false, finished = false, commits = 0;
+  var log = window.LMS_LOG = [];
+
+  // ------------------------------------------------------------------ ui ---
+
+  var $log = document.getElementById("log");
+  var $cmi = document.getElementById("cmi");
+  var $verdict = document.getElementById("verdict");
+
+  function esc(s) { return String(s).replace(/[&<>]/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+
+  function line(cls, html) {
+    var d = document.createElement("div");
+    d.className = "row " + cls;
+    d.innerHTML = html;
+    $log.appendChild(d);
+    $log.scrollTop = $log.scrollHeight;
+  }
+
+  function short(v) {
+    v = String(v);
+    return v.length > 160 ? esc(v.slice(0, 160)) + '<span class="dim"> …+' + (v.length - 160) + ' chars</span>' : esc(v);
+  }
+
+  function paint() {
+    var rows = "";
+    ["cmi.core.lesson_status", "cmi.core.score.raw", "cmi.core.score.min",
+     "cmi.core.score.max", "cmi.core.exit", "cmi.core.session_time",
+     "cmi.comments", "cmi.suspend_data"
+    ].forEach(function (k) {
+      var v = cmi[k];
+      rows += "<tr><td>" + esc(k.replace("cmi.", "")) + "</td><td>" +
+              (v === "" ? '<span class="dim">(empty)</span>' : short(v)) + "</td></tr>";
+    });
+    $cmi.innerHTML = rows;
+  }
+
+  function verdict() {
+    var st = cmi["cmi.core.lesson_status"], raw = cmi["cmi.core.score.raw"];
+    var bits = [];
+    bits.push(initialized ? '<span class="ok">initialized</span>'
+                          : '<span class="dim">not initialized</span>');
+    if (st && st !== "not attempted") {
+      var good = (st === "passed" || st === "completed");
+      bits.push('status=<span class="' + (good ? "ok" : "warn") + '">' + esc(st) + "</span>");
+    }
+    if (raw !== "") bits.push('score.raw=<span class="ok">' + esc(raw) + "</span>");
+    // Silence here is the failure mode: a SCO that never writes session_time
+    // still finishes cleanly, and the attempt goes on record as zero minutes.
+    var st_time = cmi["cmi.core.session_time"];
+    bits.push(st_time === "0000:00:00.00"
+      ? 'session_time=<span class="bad">never sent</span>'
+      : 'session_time=<span class="ok">' + esc(st_time) + "</span>");
+    bits.push('<span class="dim">' + commits + " commit" + (commits === 1 ? "" : "s") + "</span>");
+    if (finished) bits.push('<span class="ok">finished</span>');
+    $verdict.innerHTML = bits.join(" · ");
+  }
+
+  function record(fn, args, ret, err) {
+    log.push({ fn: fn, args: args, ret: ret, err: err, t: Date.now() });
+  }
+
+  // ----------------------------------------------------------- the API ----
+
+  function fail(code, fn, detail) {
+    lastError = code;
+    line("err", '<span class="bad">' + esc(fn) + " rejected</span> " + esc(detail) +
+                ' <span class="dim">(' + code + " " + ERRORS[code] + ")</span>");
+    return "false";
+  }
+
+  var API = {
+    LMSInitialize: function (arg) {
+      lastError = 0;
+      if (initialized) return fail(101, "LMSInitialize", "already initialized");
+      initialized = true;
+      line("life", "LMSInitialize(\"" + esc(arg) + "\") → true");
+      record("LMSInitialize", [arg], "true", 0);
+      verdict();
+      return "true";
+    },
+
+    LMSFinish: function (arg) {
+      lastError = 0;
+      if (!initialized) return fail(301, "LMSFinish", "not initialized");
+      initialized = false; finished = true;
+      line("life", "LMSFinish(\"" + esc(arg) + "\") → true");
+      record("LMSFinish", [arg], "true", 0);
+      verdict();
+      return "true";
+    },
+
+    LMSGetValue: function (key) {
+      if (!initialized) { lastError = 301; return ""; }
+      if (WRITE_ONLY.indexOf(key) !== -1) { fail(404, "LMSGetValue", key); return ""; }
+      if (!(key in cmi)) { fail(201, "LMSGetValue", key); return ""; }
+      lastError = 0;
+      var v = cmi[key];
+      line("", '<span class="dim">get</span> <span class="k">' + esc(key) + "</span> → " + short(v));
+      record("LMSGetValue", [key], v, 0);
+      return v;
+    },
+
+    LMSSetValue: function (key, value) {
+      if (!initialized) return fail(301, "LMSSetValue", key);
+      value = String(value);
+
+      if (!(key in cmi)) return fail(201, "LMSSetValue", key + " is not a SCORM 1.2 element");
+      if (READ_ONLY.indexOf(key) !== -1) return fail(403, "LMSSetValue", key);
+
+      if (key === "cmi.core.lesson_status" && STATUS.indexOf(value) === -1)
+        return fail(405, "LMSSetValue", key + " = " + JSON.stringify(value) + " is not in the vocabulary");
+      if (key === "cmi.core.exit" && EXIT.indexOf(value) === -1)
+        return fail(405, "LMSSetValue", key + " = " + JSON.stringify(value) + " is not in the vocabulary");
+      if (/^cmi\.core\.score\./.test(key) && value !== "" && !/^\d{1,3}(\.\d+)?$/.test(value))
+        return fail(405, "LMSSetValue", key + " = " + JSON.stringify(value) + " is not a CMIDecimal");
+      // CMITimespan, HHHH:MM:SS.SS - not the ISO 8601 duration SCORM 2004
+      // takes. Strict here on purpose: an LMS that swallows "PT23M6.18S"
+      // records a zero-length attempt and says nothing about why.
+      if (key === "cmi.core.session_time" && !/^\d{2,4}:[0-5]\d:[0-5]\d(\.\d{1,2})?$/.test(value))
+        return fail(405, "LMSSetValue", key + " = " + JSON.stringify(value) + " is not a CMITimespan (HHHH:MM:SS.SS)");
+      if ((key === "cmi.comments" || key === "cmi.suspend_data") && value.length > CAP)
+        return fail(405, "LMSSetValue", key + " is " + value.length + " chars, over the " + CAP + " cap");
+
+      lastError = 0;
+      cmi[key] = value;
+      line("set", '<span class="dim">set</span> <span class="k">' + esc(key) + "</span> = " + short(value));
+      record("LMSSetValue", [key, value], "true", 0);
+      paint(); verdict();
+      return "true";
+    },
+
+    LMSCommit: function (arg) {
+      if (!initialized) return fail(301, "LMSCommit", "not initialized");
+      lastError = 0; commits++;
+      line("life", "LMSCommit(\"" + esc(arg) + "\") → true");
+      record("LMSCommit", [arg], "true", 0);
+      verdict();
+      return "true";
+    },
+
+    LMSGetLastError: function () { return String(lastError); },
+    LMSGetErrorString: function (c) { return ERRORS[Number(c)] || "Unknown error"; },
+    LMSGetDiagnostic: function (c) { return "mock LMS diagnostic for " + c; }
+  };
+
+  // pipwerks walks up from the course iframe looking for window.API, so it has
+  // to hang off this window - the iframe's parent - exactly as an LMS does.
+  window.API = API;
+
+  paint(); verdict();
+
+  // ------------------------------------------------- the encoding probe ---
+
+  // scripts/core/lms.gd hands JavaScript
+  //     pipwerks.SCORM.set('<key>', decodeURIComponent('<value.uri_encode()>'))
+  // so the only thing standing between a transcript full of quotes, newlines
+  // and accented characters and a broken eval is Godot's uri_encode() lining
+  // up exactly with the browser's decodeURIComponent().
+  //
+  // ENCODED below is real output from Godot 4.7.1's String.uri_encode(),
+  // printed by tools/check_lms.gd ("info encoded:"). EXPECTED is the string it
+  // went in as. Regenerate both together if that test's NASTY constant changes.
+  var ENCODED = "Casualty%20said%20%22don%27t%20move%22%20%E2%80%94%2050%20%25%20done%0A" +
+                "line%20two%20%5C%20back%20%26%20%3Ctag%3E%20%E2%9C%93%20na%C3%AFve";
+  var EXPECTED = 'Casualty said "don\'t move" — 50 % done\nline two \\ back & <tag> ✓ naïve';
+
+  var $probe = document.getElementById("probe");
+  try {
+    var decoded = decodeURIComponent(ENCODED);
+    var same = decoded === EXPECTED;
+    $probe.innerHTML = same
+      ? '<span class="ok">pass</span> Godot uri_encode() → decodeURIComponent() ' +
+        'round-trips quotes, newline, backslash and non-ASCII (' + decoded.length + ' chars)'
+      : '<span class="bad">FAIL</span> round-trip differs<br>' +
+        '<span class="dim">got:</span> ' + esc(decoded) + '<br>' +
+        '<span class="dim">want:</span> ' + esc(EXPECTED);
+  } catch (e) {
+    $probe.innerHTML = '<span class="bad">FAIL</span> decodeURIComponent threw: ' + esc(e.message);
+  }
+
+  // A convenience for driving the reporting path without playing to the
+  // debrief: replays exactly what lms.gd emits, through the real wrapper in
+  // the course frame. Call window.simulateReport() from the console.
+  window.simulateReport = function (status, score) {
+    var w = document.getElementById("course").contentWindow;
+    if (!w.pipwerks) { console.error("the course frame has no pipwerks yet"); return; }
+    w.pipwerks.SCORM.set("cmi.core.lesson_status", status || "passed");
+    w.pipwerks.SCORM.set("cmi.core.score.raw", String(score === undefined ? 87 : score));
+    w.pipwerks.SCORM.set("cmi.core.score.min", "0");
+    w.pipwerks.SCORM.set("cmi.core.score.max", "100");
+    w.pipwerks.SCORM.set("cmi.comments", decodeURIComponent(ENCODED));
+    w.pipwerks.SCORM.save();
+    return "sent";
+  };
+}());
+</script>
+</body>
+</html>

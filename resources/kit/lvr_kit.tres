@@ -1,0 +1,162 @@
+[gd_resource type="Resource" script_class="KitManifest" format=3 uid="uid://dl4gphf6b12yv"]
+
+[ext_resource type="Script" uid="uid://c0iqfekjqbr1d" path="res://scripts/core/kit_item.gd" id="1_item"]
+[ext_resource type="Script" uid="uid://wao5qremmedk" path="res://scripts/core/kit_manifest.gd" id="2_manifest"]
+
+[sub_resource type="Resource" id="k01"]
+script = ExtResource("1_item")
+id = &"rescue_kit_bag"
+node = "Rescue kit bag"
+title = "LV Rescue Bag"
+description = "High-visibility bag holding the rescue equipment."
+in_kit = true
+rationale = "The bag is the kit. It lives at a known point in the switchroom so nobody has to think about where it is while somebody is on the conductor."
+
+[sub_resource type="Resource" id="k02"]
+script = ExtResource("1_item")
+id = &"rescue_crook"
+node = "Hook"
+title = "Rescue Crook"
+description = "Fibreglass crook, tested to 1 kV."
+in_kit = true
+rationale = "The only thing in the room rated to move a casualty off a live low voltage conductor. Everything else is a guess with your life staked on it."
+
+[sub_resource type="Resource" id="k03"]
+script = ExtResource("1_item")
+id = &"insulated_gloves"
+node = "Gloves"
+title = "LV Insulated Gloves"
+description = "Rubber gloves rated to 1000 V."
+in_kit = true
+rationale = "Inspected and air-tested before every use. They are the last line of defence if the hook is wet, cracked or wrongly gripped."
+
+[sub_resource type="Resource" id="k04"]
+script = ExtResource("1_item")
+id = &"fire_blanket"
+node = "Fire blanket"
+title = "Fire Blanket"
+description = "Sealed pouch, pull tabs at the base."
+in_kit = true
+rationale = "Electrical faults start fires and set clothing alight. The blanket smothers without water, which is the only option while anything nearby may still be live."
+
+[sub_resource type="Resource" id="k18"]
+script = ExtResource("1_item")
+id = &"burns_dressings"
+node = "Burns_dressings"
+title = "Bandage Dressing"
+description = "Green first aid pouch of sterile burn dressings."
+in_kit = true
+rationale = "Low voltage contact burns at the entry and the exit point, and they go on burning inwards after the current has stopped. Sterile dressings are what covers them while you wait for the ambulance, and they are in the bag so that nobody has to leave the casualty to go and find a first aid room."
+
+[sub_resource type="Resource" id="k05"]
+script = ExtResource("1_item")
+id = &"flashlight"
+node = "Flashlight"
+title = "Torch"
+description = "Hand torch with fresh cells."
+in_kit = true
+rationale = "The switchroom goes dark the moment the supply is killed, which is exactly when you need to see the casualty."
+
+[sub_resource type="Resource" id="k06"]
+script = ExtResource("1_item")
+id = &"isolation_sign"
+node = "Isolate here"
+title = "Danger Isolate Sign"
+description = "ISOLATE HERE - EMERGENCY placard."
+in_kit = true
+rationale = "Hung at the isolation point so the person you sent for the power finds the right switch, and so nobody closes it again while you are still working."
+
+[sub_resource type="Resource" id="k07"]
+script = ExtResource("1_item")
+id = &"wrench"
+node = "Wrench"
+title = "Adjustable Wrench"
+description = "Bench spanner from the tool board."
+rationale = "A bench tool. Uninsulated steel has no business anywhere near a live rescue."
+
+[sub_resource type="Resource" id="k08"]
+script = ExtResource("1_item")
+id = &"hammer"
+node = "Hammer"
+title = "Claw Hammer"
+description = "Steel head, rubber grip."
+rationale = "The rubber grip is for comfort, not insulation, and it is not tested for anything."
+
+[sub_resource type="Resource" id="k09"]
+script = ExtResource("1_item")
+id = &"pliers"
+node = "Pliers1"
+title = "Pliers"
+description = "General purpose pliers."
+rationale = "Uninsulated. Reaching a casualty who is still in contact with these makes you casualty two."
+
+[sub_resource type="Resource" id="k10"]
+script = ExtResource("1_item")
+id = &"screwdriver_flat"
+node = "SD1"
+title = "Flat Screwdriver"
+description = "Slotted blade, plastic handle."
+rationale = "A moulded handle is not a tested insulating barrier. Bench tools are not rescue equipment, whatever they are made of."
+
+[sub_resource type="Resource" id="k11"]
+script = ExtResource("1_item")
+id = &"screwdriver_phillips"
+node = "SD2"
+title = "Phillips Screwdriver"
+description = "Cross-head, plastic handle."
+rationale = "Same answer as its neighbour. Two tools that look insulated are still two tools that are not in the kit."
+
+[sub_resource type="Resource" id="k12"]
+script = ExtResource("1_item")
+id = &"spirit_level"
+node = "Level1"
+title = "Spirit Level"
+description = "Alloy body, 600 mm."
+rationale = "An alloy straight edge is a conductor long enough to bridge a busbar. It belongs on the tool board."
+
+[sub_resource type="Resource" id="k13"]
+script = ExtResource("1_item")
+id = &"tape_measure"
+node = "Roulette1"
+title = "Tape Measure"
+description = "Retractable steel tape."
+rationale = "Steel tape, spring loaded, and it flicks out further than you meant. Nothing about that belongs in a rescue."
+
+[sub_resource type="Resource" id="k14"]
+script = ExtResource("1_item")
+id = &"marker_pen"
+node = "Pen1"
+title = "Marker Pen"
+description = "Permanent marker."
+rationale = "Harmless, and still not kit. A rescue bag with the wrong things in it takes longer to search."
+
+[sub_resource type="Resource" id="k15"]
+script = ExtResource("1_item")
+id = &"radio"
+node = "Radio1"
+title = "Two-way Radio"
+description = "Handheld site radio."
+rationale = "Genuinely useful for raising the alarm, but it is personal issue carried on the job, not a bag item somebody has to go and find."
+
+[sub_resource type="Resource" id="k16"]
+script = ExtResource("1_item")
+id = &"hammer_drill"
+node = "Electric_hammerdrill1"
+title = "Hammer Drill"
+description = "Corded SDS drill."
+rationale = "Site plant. It is in the room because work was in progress, not because it is rescue equipment."
+
+[sub_resource type="Resource" id="k17"]
+script = ExtResource("1_item")
+id = &"aed"
+node = "AED Defibrilator Cabinet"
+title = "Automated External Defibrillator"
+description = "AED unit at the bench station."
+rationale = "Rescue equipment, but not a bag item. The defibrillator lives at its bench station and is fetched from there as its own unit during the emergency response, after the rhythm has to be analysed."
+
+[resource]
+script = ExtResource("2_manifest")
+instruction = "Click each object you believe belongs in the low voltage rescue kit and name it. Anything you leave alone is an object you are saying is not in the bag."
+closing_note = "Your answers have been recorded. They are marked with the rest of the exercise and reported in the debrief at the end."
+items = Array[ExtResource("1_item")]([SubResource("k01"), SubResource("k02"), SubResource("k03"), SubResource("k04"), SubResource("k18"), SubResource("k05"), SubResource("k06"), SubResource("k07"), SubResource("k08"), SubResource("k09"), SubResource("k10"), SubResource("k11"), SubResource("k12"), SubResource("k13"), SubResource("k14"), SubResource("k15"), SubResource("k16"), SubResource("k17")])
+name_distractors = PackedStringArray("High Voltage Tester", "Hooking Pole", "Insulating Mat", "Earthing Lead", "Voltage Proving Unit", "Resuscitation Face Shield", "Insulated Shears")

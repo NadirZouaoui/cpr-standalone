@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "enableAllProjectMcpServers": true,
+  "permissions": {
+    "defaultMode": "bypassPermissions",
+    "allow": [
+      "mcp__*",
+      "mcp__godot",
+      "mcp__godot__*",
+      "mcp__Blender",
+      "mcp__Blender__*",
+      "mcp__Windows-MCP",
+      "mcp__Windows-MCP__*",
+      "mcp__computer-use",
+      "mcp__computer-use__*",
+      "mcp__terminal",
+      "mcp__terminal__*",
+      "mcp__ccd_session",
+      "mcp__ccd_session__*",
+      "mcp__ccd_directory",
+      "mcp__ccd_directory__*",
+      "mcp__ccd_session_mgmt",
+      "mcp__ccd_session_mgmt__*",
+      "mcp__Claude_Browser",
+      "mcp__Claude_Browser__*",
+      "mcp__scheduled-tasks",
+      "mcp__scheduled-tasks__*",
+      "Bash",
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "Task",
+      "Agent",
+      "Skill",
+      "TodoWrite",
+      "NotebookEdit",
+      "WebFetch",
+      "WebSearch"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(git remote add:*)",
+      "Bash(rm -rf /:*)"
+    ]
+  }
+}

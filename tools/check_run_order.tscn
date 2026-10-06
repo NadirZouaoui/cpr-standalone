@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tools/check_run_order.gd" id="1"]
+
+[node name="CheckRunOrder" type="Node"]
+script = ExtResource("1")

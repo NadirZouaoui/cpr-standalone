@@ -1,0 +1,267 @@
+[gd_resource type="Resource" script_class="ProcedureList" format=3 uid="uid://bhjstjfb5sfev"]
+
+[ext_resource type="Script" uid="uid://bf2mdmc7704j3" path="res://scripts/core/procedure_step.gd" id="1_step"]
+[ext_resource type="Script" uid="uid://bahbw848hbu8j" path="res://scripts/core/procedure_list.gd" id="2_list"]
+
+[sub_resource type="Resource" id="s00"]
+script = ExtResource("1_step")
+id = &"kit_identified"
+title = "Identify the LVR rescue kit"
+prompt = "Name the contents of the low voltage rescue kit before you need them. Under pressure you will reach for whatever you already know is in the bag, so knowing it cold is part of the procedure, not preparation for it. Knowing what is not kit matters as much as knowing what is - a bag full of the wrong things takes longer to search when it counts."
+category = &"preparation"
+weight = 14
+
+[sub_resource type="Resource" id="s03"]
+script = ExtResource("1_step")
+id = &"ppe_donned"
+title = "Don correct PPE"
+prompt = "Long sleeves, long trousers, insulated gloves and boots before approaching the incident."
+category = &"scene_safety"
+weight = 8
+critical = true
+min_phase = 2
+
+[sub_resource type="Resource" id="s03b"]
+script = ExtResource("1_step")
+id = &"torch_taken"
+title = "Take the torch before the work starts"
+prompt = "Take the torch off the bench with the rest of your precautions. Isolating a board can take the lighting with it, and the moment you need to see the casualty is the moment after you have thrown the handle."
+category = &"scene_safety"
+weight = 4
+min_phase = 2
+
+[sub_resource type="Resource" id="s01"]
+script = ExtResource("1_step")
+id = &"hazard_identified"
+title = "Identify the electrical hazard"
+prompt = "Survey the scene and locate the live source before moving toward the casualty. Your own safety comes first - a second casualty helps nobody."
+category = &"scene_safety"
+requires = Array[StringName]([&"ppe_donned"])
+weight = 6
+critical = true
+
+[sub_resource type="Resource" id="s01a"]
+script = ExtResource("1_step")
+id = &"panel_opened"
+title = "Open the breaker panel"
+prompt = "Open the board at the point of isolation so the isolating device itself is visible. A point of isolation you cannot see is one you cannot prove."
+category = &"scene_safety"
+requires = Array[StringName]([&"hazard_identified"])
+
+[sub_resource type="Resource" id="s01c"]
+script = ExtResource("1_step")
+id = &"hazards_reassessed"
+title = "Reassess hazards inside the open board"
+prompt = "With the board open, check what opening it exposed - busbars and barriers you could not see from the floor. What you missed at a glance is often what turns out to be live."
+category = &"scene_safety"
+requires = Array[StringName]([&"panel_opened"])
+weight = 4
+
+[sub_resource type="Resource" id="s01b"]
+script = ExtResource("1_step")
+id = &"isolation_point_signed"
+title = "Hang the isolation sign on the breaker"
+prompt = "Mark the isolating device with the Danger Isolate Sign, on the same breaker the work is being done at. Anyone arriving at the board must be able to see which device kills the circuit."
+category = &"scene_safety"
+requires = Array[StringName]([&"panel_opened"])
+weight = 6
+
+[sub_resource type="Resource" id="s05"]
+script = ExtResource("1_step")
+id = &"crook_retrieved"
+title = "Retrieve the insulated rescue crook"
+prompt = "Take the crook from the LV rescue kit. Nothing else in the room is safe to make contact with."
+category = &"break_contact"
+requires = Array[StringName]([&"hazards_reassessed"])
+display_as = &"contact_broken"
+min_phase = 3
+weight = 6
+
+[sub_resource type="Resource" id="s06"]
+script = ExtResource("1_step")
+id = &"contact_broken"
+title = "Break contact with the live hazard"
+prompt = "Use the insulated crook to push or pull the casualty clear of the conductor. Never make bare contact with a casualty who is still being shocked."
+category = &"break_contact"
+requires = Array[StringName]([&"crook_retrieved"])
+min_phase = 3
+urgent = true
+weight = 14
+critical = true
+time_limit = 20.0
+late_detail = "Contact was broken late. Every additional second in contact worsens the injury and lowers the chance of survival."
+
+[sub_resource type="Resource" id="s08"]
+script = ExtResource("1_step")
+id = &"drag_to_safe_area"
+title = "Drag the casualty to the safe area"
+prompt = "Use a one-man drag by the clothing or under the arms. Move the casualty clear of the hazard before assessing anything."
+category = &"extraction"
+requires = Array[StringName]([&"contact_broken"])
+suppress_prompt = true
+weight = 10
+critical = true
+
+[sub_resource type="Resource" id="s07"]
+script = ExtResource("1_step")
+id = &"supply_isolated"
+title = "Isolate the circuit at the breaker"
+prompt = "With the casualty clear, go back to the board and open the breaker you signed. The busbars are still live after the extraction - the circuit is not safe to work near until the isolating device is off."
+category = &"extraction"
+requires = Array[StringName]([&"contact_broken"])
+suppress_prompt = true
+weight = 8
+critical = true
+
+[sub_resource type="Resource" id="s08b"]
+script = ExtResource("1_step")
+id = &"fire_checked"
+title = "Check the casualty is not on fire"
+prompt = "Confirm the casualty is not alight and there is no residual arc contact before you touch them further. If they were, the fire blanket in the rescue bag is the next move."
+category = &"primary_survey"
+requires = Array[StringName]([&"supply_isolated"])
+weight = 4
+
+[sub_resource type="Resource" id="s09"]
+script = ExtResource("1_step")
+id = &"check_response"
+title = "Check for a response"
+prompt = "Talk to the casualty and squeeze their shoulders. Confirm whether they respond before going further."
+category = &"primary_survey"
+requires = Array[StringName]([&"fire_checked"])
+weight = 8
+
+[sub_resource type="Resource" id="s11"]
+script = ExtResource("1_step")
+id = &"send_for_help"
+title = "Send for help - call 000"
+prompt = "Direct a specific person to call emergency services and report back."
+category = &"primary_survey"
+requires = Array[StringName]([&"check_response"])
+suppress_prompt = true
+weight = 10
+critical = true
+time_limit = 10.0
+late_detail = "Emergency services were called late. The call must go out the moment the casualty is found unresponsive and not breathing."
+
+[sub_resource type="Resource" id="s12"]
+script = ExtResource("1_step")
+id = &"call_for_aed"
+title = "Send a team member for the AED"
+prompt = "The defibrillator should be moving toward the casualty while compressions begin, not after."
+category = &"primary_survey"
+requires = Array[StringName]([&"check_response"])
+suppress_prompt = true
+weight = 6
+
+[sub_resource type="Resource" id="s13"]
+script = ExtResource("1_step")
+id = &"airway_opened"
+title = "Open the airway"
+prompt = "Tilt the head fully back and lift the chin. Compression-only CPR relies on the airway staying open."
+category = &"resuscitation"
+requires = Array[StringName]([&"send_for_help"])
+weight = 8
+critical = true
+
+[sub_resource type="Resource" id="s24"]
+script = ExtResource("1_step")
+id = &"breathing_checked"
+title = "Hold the breathing check"
+prompt = "Kneel at the chest and hold the check for the full three seconds before moving to compressions."
+category = &"resuscitation"
+requires = Array[StringName]([&"airway_opened"])
+suppress_prompt = true
+weight = 8
+
+[sub_resource type="Resource" id="s24b"]
+script = ExtResource("1_step")
+id = &"airway_inspected"
+title = "Check the airway for a blockage"
+prompt = "Roll the casualty to their side, look in the mouth for an obstruction, then roll them back. An open airway is not necessarily a clear one."
+category = &"resuscitation"
+requires = Array[StringName]([&"breathing_checked"])
+suppress_prompt = true
+weight = 6
+
+[sub_resource type="Resource" id="s24c"]
+script = ExtResource("1_step")
+id = &"pulse_checked"
+title = "Check for a pulse"
+prompt = "Hold at the neck and check for a pulse before starting compressions. No pulse means CPR starts now."
+category = &"resuscitation"
+requires = Array[StringName]([&"airway_inspected"])
+suppress_prompt = true
+weight = 8
+critical = true
+
+[sub_resource type="Resource" id="s25"]
+script = ExtResource("1_step")
+id = &"cpr_performed"
+title = "Perform the CPR set"
+prompt = "Deliver the full set of compressions at the anchor. Depth and rate are the numbers the debrief scores, not just finishing the set."
+category = &"resuscitation"
+requires = Array[StringName]([&"pulse_checked"])
+weight = 15
+critical = true
+
+[sub_resource type="Resource" id="s15"]
+script = ExtResource("1_step")
+id = &"chest_exposed"
+title = "Expose the chest"
+prompt = "Clear clothing from the chest so the pads make direct contact with bare skin."
+category = &"resuscitation"
+requires = Array[StringName]([&"pulse_checked"])
+suppress_prompt = true
+
+[sub_resource type="Resource" id="s26"]
+script = ExtResource("1_step")
+id = &"aed_used"
+title = "Deploy the AED and place the pads"
+prompt = "Fetch the AED, place both pads, and deliver the shock. Pad site accuracy is scored - the placement itself is not corrected for you."
+category = &"resuscitation"
+requires = Array[StringName]([&"chest_exposed"])
+weight = 15
+
+[sub_resource type="Resource" id="s27"]
+script = ExtResource("1_step")
+id = &"signs_of_life"
+title = "Recognise the casualty is breathing again"
+prompt = "Stop compressions once normal breathing returns on its own. Recognising the return is the skill - the exercise does not tell you when to look."
+category = &"recovery"
+requires = Array[StringName]([&"chest_exposed"])
+suppress_prompt = true
+weight = 4
+
+[sub_resource type="Resource" id="s28"]
+script = ExtResource("1_step")
+id = &"recovery_position"
+title = "Roll the casualty into the recovery position"
+prompt = "With breathing restored, roll the casualty onto their side, airway clear and lowest, so vomit or fluid drains rather than blocking the airway again."
+category = &"recovery"
+requires = Array[StringName]([&"signs_of_life"])
+weight = 8
+critical = true
+
+[sub_resource type="Resource" id="s29"]
+script = ExtResource("1_step")
+id = &"injuries_checked"
+title = "Check for other injuries"
+prompt = "With the casualty stable on their side, check the rest of the body for injuries the shock may have caused - burns at the entry and exit points are the most common."
+category = &"recovery"
+requires = Array[StringName]([&"recovery_position"])
+weight = 4
+
+[sub_resource type="Resource" id="s30"]
+script = ExtResource("1_step")
+id = &"handover"
+title = "Hand over to the ambulance crew"
+prompt = "Stay with the casualty and brief the ambulance crew on what happened and what was done, the moment they arrive."
+category = &"recovery"
+requires = Array[StringName]([&"injuries_checked"])
+suppress_prompt = true
+weight = 2
+
+[resource]
+script = ExtResource("2_list")
+steps = Array[ExtResource("1_step")]([SubResource("s00"), SubResource("s03"), SubResource("s03b"), SubResource("s01"), SubResource("s01a"), SubResource("s01c"), SubResource("s01b"), SubResource("s05"), SubResource("s06"), SubResource("s08"), SubResource("s07"), SubResource("s08b"), SubResource("s09"), SubResource("s11"), SubResource("s12"), SubResource("s13"), SubResource("s24"), SubResource("s24b"), SubResource("s24c"), SubResource("s25"), SubResource("s15"), SubResource("s26"), SubResource("s27"), SubResource("s28"), SubResource("s29"), SubResource("s30")])

@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://d1esrltccblav"]
+
+[ext_resource type="Script" uid="uid://ceo74w4ydalvx" path="res://scripts/cpr/cpr_rig.gd" id="1_cprrig"]
+
+[node name="CprRig" type="Node3D" unique_id=1344179348]
+script = ExtResource("1_cprrig")
+chest_bone_names = PackedStringArray("mixamorig:Spine2", "mixamorig:Spine1", "mixamorig:Spine", "Spine2", "Spine")
+head_bone_names = PackedStringArray("mixamorig:Head", "mixamorig:Neck", "Head", "Neck")
+hips_bone_names = PackedStringArray("mixamorig:Hips", "Hips", "mixamorig:Spine")

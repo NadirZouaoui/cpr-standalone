@@ -1,0 +1,140 @@
+[gd_scene format=3 uid="uid://d1bajsvog1o1q"]
+
+[ext_resource type="Script" uid="uid://cgq12b4snoign" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="PackedScene" uid="uid://bhgo1v1ffdxi0" path="res://LVR CPR.blend" id="2_room"]
+[ext_resource type="Texture2D" uid="uid://b3svv4njiuvmg" path="res://textures/city_hdri.hdr" id="3_1bvp3"]
+[ext_resource type="PackedScene" uid="uid://hxkn5hv6excn" path="res://scenes/player/player.tscn" id="3_player"]
+[ext_resource type="Script" uid="uid://dyp4hw3unmc50" path="res://scripts/casualty/casualty.gd" id="4_casualty"]
+[ext_resource type="Script" uid="uid://dnkv0r31eyiof" path="res://scripts/interaction/tool_rack.gd" id="5_tools"]
+[ext_resource type="Script" uid="uid://cnm2peierxt4l" path="res://scripts/ui/hud.gd" id="6_hud"]
+[ext_resource type="Script" uid="uid://t3a8h8s00b6q" path="res://scripts/casualty/casualty_rig.gd" id="7_rig"]
+[ext_resource type="Script" uid="uid://b6b3x1l34gjyu" path="res://scripts/ui/fail_screen.gd" id="8_fail"]
+[ext_resource type="Script" uid="uid://b1gwtyw6knvyr" path="res://scripts/casualty/shock_cue.gd" id="9_shock"]
+[ext_resource type="Script" uid="uid://bpx4t7ppwtlv4" path="res://scripts/fx/arc_fx.gd" id="10_arcfx"]
+[ext_resource type="AudioStream" uid="uid://btqjikp8ir4ku" path="res://audio/fx/805190__mrspivey__electricity-02.wav" id="11_ycdy4"]
+[ext_resource type="AudioStream" uid="uid://bju0dux6fxwmo" path="res://audio/fx/853600__justamudkip__fridge-rumble.wav" id="12_w48qg"]
+[ext_resource type="Script" uid="uid://cijpk62rcuwxg" path="res://scripts/ui/kit_check.gd" id="13_kit"]
+[ext_resource type="Resource" uid="uid://dl4gphf6b12yv" path="res://resources/kit/lvr_kit.tres" id="14_manifest"]
+[ext_resource type="Script" uid="uid://buwccpw0d0e77" path="res://scripts/ui/casualty_action_menu.gd" id="15_actions"]
+[ext_resource type="Script" uid="uid://csuhjulyipgng" path="res://scripts/interaction/kit_bench.gd" id="16_bench"]
+[ext_resource type="Script" uid="uid://blpbtheclyulg" path="res://scripts/interaction/breaker_panel.gd" id="17_breaker"]
+[ext_resource type="Script" uid="uid://dqafebrk4irr8" path="res://scripts/interaction/isolation_sign_anchor.gd" id="18_anchor"]
+[ext_resource type="PackedScene" uid="uid://d1esrltccblav" path="res://scenes/cpr/CprRig.tscn" id="20_82xsv"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_kv6m5"]
+panorama = ExtResource("3_1bvp3")
+energy_multiplier = 0.8
+
+[sub_resource type="Sky" id="Sky_2xi3m"]
+sky_material = SubResource("PanoramaSkyMaterial_kv6m5")
+
+[sub_resource type="Environment" id="Environment_room"]
+background_mode = 2
+sky = SubResource("Sky_2xi3m")
+tonemap_mode = 2
+glow_enabled = true
+glow_intensity = 0.6
+glow_bloom = 0.05
+
+[node name="Main" type="Node3D" unique_id=1732020440]
+script = ExtResource("1_main")
+
+[node name="ControlRoom" parent="." unique_id=545581443 instance=ExtResource("2_room")]
+
+[node name="Armature" parent="ControlRoom" index="25" unique_id=116909043]
+transform = Transform3D(0.009945871, -0.0010390558, -4.541857e-11, 0, 4.3711387e-10, -0.01, -0.0010390558, -0.009945871, -4.3474788e-10, 1.2438537, 0, -1.7855719)
+
+[node name="Boots1_002" parent="ControlRoom/Armature/Skeleton3D" parent_id_path=PackedInt32Array(545581443, 1326470975) index="0" unique_id=1589208979]
+"blend_shapes/Key 1" = 1.0
+
+[node name="Breaker_handle" parent="ControlRoom/Breaker" parent_id_path=PackedInt32Array(545581443, 155749714) index="0" unique_id=355130191]
+transform = Transform3D(1, 0, 0, 0, 0.98798203, 0.15456972, 0, -0.15456972, 0.98798203, 0.0047335625, 0.2291768, -0.011839453)
+
+[node name="Casualty" type="Node3D" parent="." unique_id=992388753]
+script = ExtResource("4_casualty")
+autostart = false
+safe_area_marker_path = NodePath("../CprAnchor")
+
+[node name="Rig" type="Node" parent="Casualty" unique_id=1789948174]
+script = ExtResource("7_rig")
+armed_externally = true
+
+[node name="ToolRack" type="Node" parent="." unique_id=824260152]
+script = ExtResource("5_tools")
+
+[node name="Lights" type="Node3D" parent="." unique_id=1330276781]
+
+[node name="Strip2" type="OmniLight3D" parent="Lights" unique_id=1859652529]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0851635, 1.3660833, -0.8942199)
+light_energy = 0.66
+light_size = 0.07
+shadow_enabled = true
+shadow_opacity = 0.3
+omni_range = 6.5
+omni_attenuation = 1.5
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1574541608]
+environment = SubResource("Environment_room")
+
+[node name="Player" parent="." unique_id=1153696811 instance=ExtResource("3_player")]
+transform = Transform3D(0.055191547, 0, 0.99847454, 0, 1, 0, -0.99847454, 0, 0.055191547, 5.0411377, 0, -1.3714693)
+
+[node name="Hud" type="CanvasLayer" parent="." unique_id=988361217]
+script = ExtResource("6_hud")
+
+[node name="FailScreen" type="CanvasLayer" parent="." unique_id=879461967]
+script = ExtResource("8_fail")
+
+[node name="ArcFx" type="Node3D" parent="." unique_id=1368293763]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1.217, 1.078, -2.06)
+script = ExtResource("10_arcfx")
+zap_sound = ExtResource("11_ycdy4")
+buzz_sound = ExtResource("12_w48qg")
+
+[node name="ShockCue" type="Node" parent="." unique_id=1846670197]
+script = ExtResource("9_shock")
+arc_fx_path = NodePath("../ArcFx")
+armed_externally = true
+
+[node name="KitBench" type="Node" parent="." unique_id=1553028744]
+script = ExtResource("16_bench")
+manifest = ExtResource("14_manifest")
+
+[node name="KitCheck" type="CanvasLayer" parent="." unique_id=1204885317]
+script = ExtResource("13_kit")
+manifest = ExtResource("14_manifest")
+
+[node name="CasualtyActions" type="CanvasLayer" parent="." unique_id=1204885318]
+script = ExtResource("15_actions")
+
+[node name="CprAnchor" type="Marker3D" parent="." unique_id=1553028747]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.642, 0, -1.118)
+
+[node name="SignAnchor" type="Marker3D" parent="." unique_id=1553028746]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2349406, 1.3610499, -2.1586192)
+script = ExtResource("18_anchor")
+
+[node name="BreakerPanel" type="Node" parent="." unique_id=1553028745]
+script = ExtResource("17_breaker")
+sign_rotation_deg = Vector3(-90, 0, 180)
+
+[node name="CprRig" parent="." unique_id=775789384 instance=ExtResource("20_82xsv")]
+transform = Transform3D(-0.99458647, 0, -0.10391221, 0, 1, 0, 0.10391221, 0, -0.99458647, 1.242431, 1.228253, -1.7991914)
+chest_bone_names = PackedStringArray("mixamorig_Spine1")
+head_bone_names = PackedStringArray("mixamorig_Head", "mixamorig_Neck")
+hips_bone_names = PackedStringArray("mixamorig_Hips")
+hand_bone_names = PackedStringArray("mixamorig:LeftHand", "mixamorig:RightHand", "LeftHand", "RightHand")
+foot_bone_names = PackedStringArray("mixamorig:LeftFoot", "mixamorig:RightFoot", "LeftFoot", "RightFoot")
+gizmo_length = 0.1
+kneel_pos = Vector3(0, 0.5, 0.1)
+kneel_rot = Vector3(-75, 0, 0)
+pad_side_pos = Vector3(0, 0.775, 0.274)
+pad_side_rot = Vector3(-55, 0, 0)
+shock_pos = Vector3(0, 0.5, 0)
+shock_rot = Vector3(-30, 0, 0)
+panel_head_pos = Vector3(0, 0.4, -0.25)
+panel_pad_side_pos = Vector3(0.21, 0.328, 0)
+panel_shock_pos = Vector3(0, 0.4, -0.25)
+point_chest_pos = Vector3(0, 0.12, -0.155)
+
+[editable path="ControlRoom"]

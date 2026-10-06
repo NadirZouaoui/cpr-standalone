@@ -1,0 +1,101 @@
+LVR CPR (Node3D)
+  Plane_001 (MeshInstance3D) mesh=LVR CPR_Plane_001 surf=1
+    StaticBody3D (StaticBody3D)
+  FoldingLadder (MeshInstance3D) mesh=LVR CPR_Plane_019 surf=4
+    StaticBody3D (StaticBody3D)
+  Cube_004 (MeshInstance3D) mesh=LVR CPR_Cube_017 surf=1
+    StaticBody3D (StaticBody3D)
+  Cube (MeshInstance3D) mesh=LVR CPR_Cube_001 surf=2
+  Aged Sideboard (MeshInstance3D) mesh=LVR CPR_Cube_012 surf=2
+  Wrench (MeshInstance3D) mesh=LVR CPR_Mesh_058 surf=1
+    StaticBody3D (StaticBody3D)
+  SD2 (MeshInstance3D) mesh=LVR CPR_Mesh_051 surf=1
+    StaticBody3D (StaticBody3D)
+  SD1 (MeshInstance3D) mesh=LVR CPR_Mesh_050 surf=1
+    StaticBody3D (StaticBody3D)
+  Roulette1 (MeshInstance3D) mesh=LVR CPR_Mesh_061 surf=1
+    StaticBody3D (StaticBody3D)
+  Radio1 (MeshInstance3D) mesh=LVR CPR_Mesh_064 surf=1
+    StaticBody3D (StaticBody3D)
+  Pliers1 (MeshInstance3D) mesh=LVR CPR_Mesh_057 surf=1
+    StaticBody3D (StaticBody3D)
+  Pen1 (MeshInstance3D) mesh=LVR CPR_Mesh_047 surf=1
+    StaticBody3D (StaticBody3D)
+  Level1 (MeshInstance3D) mesh=LVR CPR_Mesh_062 surf=1
+    StaticBody3D (StaticBody3D)
+  Hammer (MeshInstance3D) mesh=LVR CPR_Mesh_060 surf=1
+    StaticBody3D (StaticBody3D)
+  Electric_hammerdrill1 (MeshInstance3D) mesh=LVR CPR_Mesh_063 surf=1
+    StaticBody3D (StaticBody3D)
+  Breaker-col (MeshInstance3D) mesh=LVR CPR_Cube surf=5
+    Cube_001 (MeshInstance3D) mesh=LVR CPR_Cube_002 surf=5
+      StaticBody3D (StaticBody3D)
+    Cube_002 (MeshInstance3D) mesh=LVR CPR_Cube_0022 surf=5
+      StaticBody3D (StaticBody3D)
+    Cube_003 (MeshInstance3D) mesh=LVR CPR_Cube_0023 surf=5
+      StaticBody3D (StaticBody3D)
+    StaticBody3D (StaticBody3D)
+  Control room (MeshInstance3D) mesh=LVR CPR_Cube_014 surf=2
+    Box1_004 (MeshInstance3D) mesh=LVR CPR_Cylinder_023 surf=2
+    LowPolyDoor 03_002 (MeshInstance3D) mesh=LVR CPR_Plane_012 surf=1
+      LowPolyDoor 03_001 (MeshInstance3D) mesh=LVR CPR_Plane_009 surf=2
+        StaticBody3D (StaticBody3D)
+    Plane_003 (MeshInstance3D) mesh=LVR CPR_Plane_005 surf=4
+    StaticBody3D (StaticBody3D)
+  Cube_004-col (MeshInstance3D) mesh=LVR CPR_Cube_0026 surf=5
+    Cube_005 (MeshInstance3D) mesh=LVR CPR_Cube_0024 surf=5
+      StaticBody3D (StaticBody3D)
+    Cube_006 (MeshInstance3D) mesh=LVR CPR_Cube_0025 surf=5
+      StaticBody3D (StaticBody3D)
+    StaticBody3D (StaticBody3D)
+  Breaker_001 (MeshInstance3D) mesh=LVR CPR_Cube2 surf=5
+    StaticBody3D (StaticBody3D)
+  Breaker_002 (MeshInstance3D) mesh=LVR CPR_Cube_004 surf=2
+    StaticBody3D (StaticBody3D)
+  Breaker_002_001 (MeshInstance3D) mesh=LVR CPR_Cube_007 surf=2
+    StaticBody3D (StaticBody3D)
+  BagaPie_Pipes_001 (MeshInstance3D) mesh=LVR CPR_BagaPie_Pipes_0012 surf=2
+    GN Instance (MeshInstance3D) mesh=LVR CPR_BagaPie_Pipes_001 surf=2
+    GN Instance2 (MeshInstance3D) mesh=LVR CPR_Mesh surf=1
+    GN Instance3 (MeshInstance3D) mesh=LVR CPR_Mesh surf=1
+    GN Instance4 (MeshInstance3D) mesh=LVR CPR_Mesh surf=1
+    GN Instance5 (MeshInstance3D) mesh=LVR CPR_Mesh surf=1
+  BagaPie_Pipes_002 (MeshInstance3D) mesh=LVR CPR_BagaPie_Pipes_0022 surf=2
+    GN Instance6 (MeshInstance3D) mesh=LVR CPR_BagaPie_Pipes_002 surf=2
+    GN Instance7 (MeshInstance3D) mesh=LVR CPR_Mesh2 surf=1
+    GN Instance8 (MeshInstance3D) mesh=LVR CPR_Mesh2 surf=1
+  Cube_095 (MeshInstance3D) mesh=LVR CPR_Cube_093 surf=12
+    StaticBody3D (StaticBody3D)
+  Armature (Node3D)
+    Skeleton3D (Skeleton3D)
+      Boots1_002 (MeshInstance3D) mesh=LVR CPR_Mesh_001 surf=8
+        StaticBody3D (StaticBody3D)
+  Cube_008 (MeshInstance3D) mesh=LVR CPR_Cube_005 surf=1
+  Breaker busbars (MeshInstance3D) mesh=LVR CPR_mesh_input surf=1
+  Breaker (MeshInstance3D) mesh=LVR CPR_mesh_input_001 surf=1
+    Breaker_handle (MeshInstance3D) mesh=LVR CPR_mesh_input_002 surf=1
+      StaticBody3D (StaticBody3D)
+  Casualty_CPR_Posed (MeshInstance3D) mesh=LVR CPR_Casualty_CPR_Posed_mesh_001 surf=9
+    StaticBody3D (StaticBody3D)
+  Rescue kit bag (MeshInstance3D) mesh=LVR CPR_Cube_003 surf=6
+    StaticBody3D (StaticBody3D)
+  Fire blanket (MeshInstance3D) mesh=LVR CPR_Cube_056 surf=1
+    StaticBody3D (StaticBody3D)
+  Hook (MeshInstance3D) mesh=LVR CPR_BézierCurve surf=1
+    StaticBody3D (StaticBody3D)
+  Flashlight (MeshInstance3D) mesh=LVR CPR_Cylinder_007 surf=5
+    StaticBody3D (StaticBody3D)
+  Gloves (MeshInstance3D) mesh=LVR CPR_Mesh_110 surf=1
+    StaticBody3D (StaticBody3D)
+  Isolate here (MeshInstance3D) mesh=LVR CPR_Gemini_Generated_Image_5rx09v5rx09v5rx0 surf=1
+    StaticBody3D (StaticBody3D)
+  AED Defibrilator Cabinet (MeshInstance3D) mesh=LVR CPR_mesh_input_003 surf=3
+    StaticBody3D (StaticBody3D)
+  AED Defibrilator CPR (MeshInstance3D) mesh=LVR CPR_mesh_input_004 surf=1
+  AED Defibrilator Pad 1_OnAED (MeshInstance3D) mesh=LVR CPR_mesh_input_005 surf=2
+  AED Defibrilator Pad 2_OnAED (MeshInstance3D) mesh=LVR CPR_mesh_input_006 surf=2
+  PadSite_Correct_Upper (MeshInstance3D) mesh=LVR CPR_Plane_002 surf=2
+  PadSite_Wrong_03 (MeshInstance3D) mesh=LVR CPR_Mesh3 surf=2
+  PadSite_Correct_Lower (MeshInstance3D) mesh=LVR CPR_Plane_006 surf=2
+  PadSite_Wrong_02 (MeshInstance3D) mesh=LVR CPR_Mesh4 surf=2
+  PadSite_Wrong_01 (MeshInstance3D) mesh=LVR CPR_Mesh5 surf=2
